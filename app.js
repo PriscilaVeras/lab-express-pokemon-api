@@ -7,6 +7,7 @@ const allPokemon = require("./data");
 
 const app = express();
 
+app.use(express.json());
 // -- Define your route listeners here! --
 
 // allPolemon
@@ -54,14 +55,9 @@ app.get("/pokemon/:id", (req, res) => {
 app.post("/pokemon", (req, res) => {
   const formData = req.body;
 
-  const newPokemon = {
-    id: uuidv4(),
-    name: formData.name,
-    types: formData.types,
-    height: formData.height,
-    weight: formData.weight,
-    sprite: formData.sprite,
-  };
+  const lastId = allPokemon[allPokemon.length - 1].id;
+
+  const newPokemon = { ...formData, id: lastId + 1 };
 
   allPokemon.push(newPokemon);
 
@@ -75,7 +71,7 @@ app.put("/pokemon/:id", (req, res) => {
   const id = req.params.id;
 
   const foundPokemon = allPokemon.find((pokemonElement) => {
-    return pokemonElement.id === id;
+    return pokemonElement.id === Number(id);
   });
 
   const index = allPokemon.indexOf(foundPokemon);
@@ -86,14 +82,14 @@ app.put("/pokemon/:id", (req, res) => {
 // delete
 app.delete("/pokemon/:id", (req, res) => {
   const index = allPokemon.findIndex((pokemonElement) => {
-    return pokemonElement.id === req.params.id;
+    return pokemonElement.id === Number(req.params.id);
   });
 
-  if (index > 0) {
+  if (index > -1) {
     allPokemon.splice(index, 1);
-    return res.json({ msg: "Contact deleted successfully" });
+    return res.json({ msg: "Pokemon deleted successfully" });
   } else {
-    return res.json({ msg: "Contact not found." });
+    return res.json({ msg: "Pokemon not found." });
   }
 });
 

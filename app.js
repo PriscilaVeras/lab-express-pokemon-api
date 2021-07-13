@@ -16,24 +16,23 @@ app.get("/pokemon", (req, res) => {
 
 // search pokemon
 app.get("/pokemon/search", (req, res) => {
-  const queryParams = req.query;
-  console.log(queryParams);
+  for (let key in req.query) {
+    const filteredPokemon = allPokemon.filter((pokemonElement) => {
+      if (key === "types") {
+        return pokemonElement.types.includes(req.query.types);
+      }
 
-  for (let key in queryParams) {
-    const foundPokemon = allPokemon.find((pokemonElement) => {
-      return pokemonElement[key]
+      return pokemonElement.name
         .toLowerCase()
-        .includes(queryParams[key].toLowerCase());
+        .includes(req.query.name.toLowerCase());
     });
 
-    if (foundPokemon) {
-      return res.json(foundPokemon);
+    if (filteredPokemon) {
+      return res.json(filteredPokemon);
     } else {
       return res.json({ msg: "Pokemon not found!" });
     }
   }
-
-  res.json(queryParams);
 });
 
 // especific pokemon
